@@ -10,8 +10,8 @@ import datetime, pytz
 from datetime import timedelta
 
 ############################################### Initializing our datasets
-SITE = "csu-dominguez-hills" #Cahnge this according to the site
-RoomsType = pd.read_csv('CSUDH_Room-Types-Lighting-Reqs.csv', index_col=2, header=[0]) #change this according to the site (keep the same format and header names)
+SITE = "ciee" #Cahnge this according to the site
+
 
 #print RoomsType.RoomsType[df['column_name'] == some_value]
 c = get_client()
@@ -38,7 +38,6 @@ byrooms_o = defaultdict(list)
 for item in res2['Rows']:
 	byrooms_o[item['?room']].append(item['?puuid'])
 
-print byrooms_o
 print "Occupany uuids loaded!"
 
 
@@ -70,12 +69,34 @@ for item in res['Rows']:
 
 print "Lighting systems loaded!"
 
+
+####### room type query
+
+
+type_query = """SELECT * FROM %s WHERE {
+    ?room rdf:type brick:Room.
+    ?room rdf:label ?label
+};
+"""
+
+res3=hod.do_query(type_query % SITE)
+
+byrooms_type = defaultdict(list)
+for item in res3['Rows']:
+	byrooms_type[item['?room']].append(item['?label'])
+
+print byrooms_type
+print "Room types loaded!"
+
+
+
+
 ################################################ Controls
 
 c = mdal.MDALClient("xbos/mdal")
 
 for room in all_rooms:
-	Type = RoomsType["Room Type"][room][0]
+	Type = byrooms_type[room][0]
 	if Type=="Hallway":
 		for light in byrooms[room]:
 			print "a"#print light.brightness
@@ -117,4 +138,3 @@ for room in all_rooms:
 
 print "Done! We skipped the following sensors:"
 print skipped
-
