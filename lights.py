@@ -10,6 +10,7 @@ import datetime, pytz
 from datetime import timedelta
 
 ############################################### Initializing our datasets
+ACTUATE = True
 SITE = "ciee" #Cahnge this according to the site
 
 
@@ -89,25 +90,29 @@ print byrooms_type
 print "Room types loaded!"
 
 
-
-
+Actuated = ""
 ################################################ Controls
 
 c = mdal.MDALClient("xbos/mdal")
 
 for room in all_rooms:
 	Type = byrooms_type[room][0]
+
 	if Type=="Hallway":
 		for light in byrooms[room]:
-			print "a"#print light.brightness
-			#light.set_brightness(20)
+			if ACTUATE:
+				brightness =20
+				Actuated += "Lights in room"+str(room)+" was set to"+str(brightness)+"\n"
+				light.set_brightness(brightness)
 
-	if Type=="Toilet":
+	elif Type=="Toilet":
 		for light in byrooms[room]:
 			print "c"#print light.brightness
-			#light.set_brightness(10)
-
-	if Type!="Hailway":
+			if ACTUATE:
+				brightness =10
+				Actuated += "Lights in room"+str(room)+" was set to"+str(brightness)+"\n"
+				light.set_brightness(brightness)
+	else:
 		query_list = []
 		for i in byrooms_o[room]:
 			query_list.append(i)
@@ -133,8 +138,21 @@ for room in all_rooms:
 		df.loc[:, 'occ'] = 1 * (df['occ'] > 0)
 
 		if df["occ"][0]!=1:
-			print "a"#light.brightness
-			#light.set_brightness(0)
+			for light in byrooms[room]:
+				if ACTUATE:
+					brightness = 0
+					Actuated += "Lights in room"+str(room)+" was set to "+str(brightness)+"\n"
+					light.set_brightness(brightness)
+		else:
+			for light in byrooms[room]:
+				if ACTUATE:
+					brightness = 10
+					Actuated += "Lights in room"+str(room)+" was set to "+str(brightness)+"\n"
+					light.set_brightness(brightness)
 
-print "Done! We skipped the following sensors:"
+print "Done!"
+print "================================"
+print "We skipped the following lights:"
 print skipped
+print "We actuated the following lights:"
+print Actuated
