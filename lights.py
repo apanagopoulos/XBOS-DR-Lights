@@ -10,7 +10,7 @@ import datetime, pytz
 from datetime import timedelta
 
 ############################################### Initializing our datasets
-ACTUATE = True
+ACTUATE = False
 SITE = "ciee" #Cahnge this according to the site
 
 
@@ -103,7 +103,7 @@ for room in all_rooms:
 			if ACTUATE:
 				brightness =20
 				Actuated += "Lights in room"+str(room)+" was set to"+str(brightness)+"\n"
-				light.set_brightness(brightness)
+				light.set_brightness(min(light.brightness,brightness))
 
 	elif Type=="Toilet":
 		for light in byrooms[room]:
@@ -111,7 +111,7 @@ for room in all_rooms:
 			if ACTUATE:
 				brightness =10
 				Actuated += "Lights in room"+str(room)+" was set to"+str(brightness)+"\n"
-				light.set_brightness(brightness)
+				light.set_brightness(min(light.brightness,brightness))
 	else:
 		query_list = []
 		for i in byrooms_o[room]:
@@ -142,13 +142,14 @@ for room in all_rooms:
 				if ACTUATE:
 					brightness = 0
 					Actuated += "Lights in room"+str(room)+" was set to "+str(brightness)+"\n"
-					light.set_brightness(brightness)
+					light.set_brightness(min(light.brightness,brightness))
 		else:
 			for light in byrooms[room]:
+				print light.brightness()
 				if ACTUATE:
 					brightness = 10
 					Actuated += "Lights in room"+str(room)+" was set to "+str(brightness)+"\n"
-					light.set_brightness(brightness)
+					light.set_brightness(min(light.brightness,brightness))
 
 print "Done!"
 print "================================"
